@@ -39,7 +39,6 @@ declare global {
       button: Partial<HTMLButtonElement>;
       h1: Partial<HTMLHeadingElement>;
       span: Partial<HTMLSpanElement>;
-      // Add more elements here if needed
     }
   }
 }
