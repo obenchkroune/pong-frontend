@@ -8,23 +8,23 @@ export class State<T = any> {
     this.state = initialState;
   }
 
-  getState(): T {
+  getState = (): T => {
     return this.state;
-  }
+  };
 
-  setState(newState: Partial<T>) {
-    this.state = { ...this.state, ...newState };
+  setState = (newState: Partial<T>) => {
+    this.state = Object.assign({}, this.state, newState);
     this.notify();
-  }
+  };
 
-  subscribe(listener: Listener) {
+  subscribe = (listener: Listener) => {
     this.listeners.push(listener);
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener);
     };
-  }
+  };
 
-  private notify() {
+  private notify = () => {
     this.listeners.forEach((listener) => listener());
-  }
+  };
 }

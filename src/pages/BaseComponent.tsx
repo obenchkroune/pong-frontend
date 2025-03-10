@@ -1,15 +1,20 @@
 import { State } from "@/lib/State";
 
-export class BaseComponent<StateT = any> {
-  private _container: HTMLDivElement;
+export class BaseComponent<StateT extends object = {}> {
   private _title?: string;
-  state: State<StateT>;
+  private _container;
+  private _store;
+  private _unsubscribe;
+  public state;
+  public setState;
 
   constructor() {
+    this.getHtml = this.getHtml.bind(this);
     this._container = document.createElement("div");
-    this.getHTMLElements = this.getHTMLElements.bind(this);
-    this.state = new State<StateT>({} as StateT);
-    this.state.subscribe(this.getHTMLElements);
+    this._store = new State<StateT>({} as StateT);
+    this._unsubscribe = this._store.subscribe(this.getHtml);
+    this.state = this._store.getState();
+    this.setState = this._store.setState;
   }
 
   get title() {
@@ -24,11 +29,14 @@ export class BaseComponent<StateT = any> {
     return this._container;
   }
 
-  getHTMLElements() {
-    if (this._title) {
-      document.title = this.title;
-    }
-    this._container.replaceChildren(router.mount(this.render()));
+  getHtml() {
+    this.state = this._store.getState();
+    document.title = this.title;
+    this._container.replaceChildren(this.render());
     return this._container;
   }
+
+  cleanup = () => {
+    this._unsubscribe();
+  };
 }

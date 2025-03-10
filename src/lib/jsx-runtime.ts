@@ -42,7 +42,7 @@ export const jsx = {
 
     const isSVG = SVG_ELEMENTS.has(component);
     const element = isSVG
-      ? document.createElementNS(SVG_NS, component)
+      ? document.createElementNS(props["xmlns"] ?? SVG_NS, component)
       : document.createElement(component);
 
     for (const [key, value] of Object.entries(props)) {

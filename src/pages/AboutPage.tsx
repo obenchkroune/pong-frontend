@@ -10,7 +10,7 @@ class HomePage extends BaseComponent {
 
   render(): HTMLElement {
     return (
-      <div class="container mx-auto p-4 space-y-8">
+      <div className="container mx-auto p-4 space-y-8">
         <Button variant="outline" href="/">
           Home Page
         </Button>

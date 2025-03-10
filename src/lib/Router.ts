@@ -2,33 +2,21 @@ import { BaseComponent } from "@/pages/BaseComponent";
 
 type Route = {
   path: string;
-  component: BaseComponent;
+  component: typeof BaseComponent;
 };
 
 export class Router {
   private routes: Route[] = [];
   private root: HTMLElement;
-  private currentComponent: HTMLElement | null = null;
+  private currentComponent: BaseComponent | null = null;
 
   constructor(rootElement: HTMLElement) {
     this.root = rootElement;
     window.addEventListener("popstate", () => this.handleRoute());
   }
 
-  mount(div: HTMLElement) {
-    for (const el of div.querySelectorAll("a")) {
-      if (el.href.startsWith(window.location.origin)) {
-        el.addEventListener("click", (e) => {
-          e.preventDefault();
-          window.router.navigateTo(new URL(el.href).pathname);
-        });
-      }
-    }
-    return div;
-  }
-
-  addRoute(path: string, component: new () => BaseComponent<any>) {
-    this.routes.push({ path, component: new component() });
+  addRoute(path: string, component: typeof BaseComponent<any>) {
+    this.routes.push({ path, component });
   }
 
   navigateTo(path: string) {
@@ -42,13 +30,13 @@ export class Router {
       this.routes.find((route) => route.path === path) || this.routes[0];
 
     if (route) {
-      if (this.currentComponent && (this.currentComponent as any).cleanup) {
-        (this.currentComponent as any).cleanup();
+      if (this.currentComponent) {
+        this.currentComponent.cleanup();
       }
 
       this.root.innerHTML = "";
-      this.currentComponent = route.component.getHTMLElements();
-      this.root.appendChild(this.currentComponent);
+      this.currentComponent = new route.component();
+      this.root.appendChild(this.currentComponent.getHtml());
     }
   }
 
