@@ -4,15 +4,14 @@ export class BaseComponent<StateT extends object = {}> {
   private _title?: string;
   private _container;
   private _store;
-  private _unsubscribe;
+  private _unsubscribe: Array<() => void> = [];
   public state;
   public setState;
 
   constructor() {
     this.getHtml = this.getHtml.bind(this);
-    this._container = document.createElement("div");
+    this._container = document.createDocumentFragment();
     this._store = new State<StateT>({} as StateT);
-    this._unsubscribe = this._store.subscribe(this.getHtml);
     this.state = this._store.getState();
     this.setState = this._store.setState;
   }
@@ -25,7 +24,11 @@ export class BaseComponent<StateT extends object = {}> {
     this._title = title;
   }
 
-  render(): HTMLElement {
+  setRenderCallback(cb: () => any) {
+    this._unsubscribe.push(this._store.subscribe(cb));
+  }
+
+  render(): DocumentFragment {
     return this._container;
   }
 
@@ -37,6 +40,8 @@ export class BaseComponent<StateT extends object = {}> {
   }
 
   cleanup = () => {
-    this._unsubscribe();
+    for (const cb of this._unsubscribe) {
+      cb();
+    }
   };
 }

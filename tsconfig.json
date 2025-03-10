@@ -19,7 +19,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "jsxImportSource": "@/lib",
 
     "baseUrl": ".",

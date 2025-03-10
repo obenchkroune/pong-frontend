@@ -8,7 +8,7 @@ class HomePage extends BaseComponent {
     this.title = "About Page";
   }
 
-  render(): HTMLElement {
+  render(): DocumentFragment {
     return (
       <div className="container mx-auto p-4 space-y-8">
         <Button variant="outline" href="/">

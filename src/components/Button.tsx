@@ -41,18 +41,15 @@ const Button = ({
   className,
   ...props
 }: PropsWithChildren<ButtonProps>) => {
-  const classes = cn(buttonVariants({ variant, size, className }));
-  if (props["href"]) {
-    return (
-      <a className={classes} href={props["href"]}>
-        {children}
-      </a>
-    );
-  }
+  const Comp = props["href"] ? "a" : "button";
+
   return (
-    <button className={classes} {...props}>
+    <Comp
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    >
       {children}
-    </button>
+    </Comp>
   );
 };
 

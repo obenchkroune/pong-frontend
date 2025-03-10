@@ -27,12 +27,11 @@ const SVG_ELEMENTS = new Set([
 ]);
 
 export const jsx = {
-  fragment: "",
   component(
     component: string | ((props: any) => HTMLElement),
     props: any,
     ...children: any[]
-  ): HTMLElement | DocumentFragment | SVGElement {
+  ): HTMLElement | SVGElement {
     if (!props) props = {};
     props.children = children.flat();
 

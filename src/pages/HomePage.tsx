@@ -18,7 +18,7 @@ class HomePage extends BaseComponent<AppState> {
     });
   }
 
-  render(): HTMLElement {
+  render(): DocumentFragment {
     return (
       <div className="container mx-auto p-4 space-y-8">
         <div className="flex gap-4">

@@ -10,11 +10,11 @@ export default defineConfig({
   },
 
   esbuild: {
+    drop: ["console", "debugger"],
     jsx: "transform",
     jsxDev: false,
     jsxImportSource: "@",
     jsxInject: `import { jsx } from '@/lib/jsx-runtime'`,
     jsxFactory: "jsx.component",
-    jsxFragment: "jsx.fragment",
   },
 });

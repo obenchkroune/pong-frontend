@@ -7,7 +7,7 @@ class NotFound extends BaseComponent {
     this.title = "404 Not Found";
   }
 
-  render(): HTMLElement {
+  render(): DocumentFragment {
     return (
       <div className="h-screen w-screen flex flex-col gap-8 justify-center items-center">
         <h1 className="text-8xl">404: Not Found</h1>

@@ -34,18 +34,24 @@ export class Router {
     const path = window.location.pathname;
     const route = this.routes.find((route) => route.path === path);
 
-    if (route) {
-      if (this.currentComponent) {
-        this.currentComponent.cleanup();
-        this.currentComponent = undefined;
-      }
+    this.currentComponent?.cleanup();
+    this.currentComponent = undefined;
 
-      this.root.innerHTML = "";
-      this.currentComponent = new route.component();
-      this.root.replaceChildren(this.currentComponent.getHtml());
-    } else if (this.errorRoutes.has(404)) {
-      this.currentComponent = new (this.errorRoutes.get(404)!)();
-      this.root.replaceChildren(this.currentComponent.getHtml());
+    const errorComponent = this.errorRoutes.get(404);
+    this.currentComponent = route
+      ? new route.component()
+      : errorComponent
+      ? new errorComponent()
+      : undefined;
+
+    if (this.currentComponent) {
+      this.root.replaceChildren(this.currentComponent!.getHtml());
+
+      this.currentComponent.setRenderCallback(
+        () =>
+          this.currentComponent &&
+          this.root.replaceChildren(this.currentComponent.getHtml())
+      );
     }
   }
 
