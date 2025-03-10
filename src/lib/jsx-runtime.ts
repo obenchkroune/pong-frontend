@@ -1,12 +1,38 @@
-import { Component, PropsWithChildren } from "@/types/jsx";
+const SVG_NS = "http://www.w3.org/2000/svg";
+const SVG_ELEMENTS = new Set([
+  "svg",
+  "path",
+  "circle",
+  "rect",
+  "line",
+  "polygon",
+  "polyline",
+  "ellipse",
+  "g",
+  "defs",
+  "clipPath",
+  "mask",
+  "use",
+  "symbol",
+  "linearGradient",
+  "radialGradient",
+  "stop",
+  "filter",
+  "feGaussianBlur",
+  "feOffset",
+  "feBlend",
+  "feColorMatrix",
+  "feComponentTransfer",
+  "feComposite",
+]);
 
 export const jsx = {
   fragment: "",
   component(
-    component: string | Component,
-    props: PropsWithChildren,
+    component: string | ((props: any) => HTMLElement),
+    props: any,
     ...children: any[]
-  ): HTMLElement | DocumentFragment {
+  ): HTMLElement | DocumentFragment | SVGElement {
     if (!props) props = {};
     props.children = children.flat();
 
@@ -14,29 +40,30 @@ export const jsx = {
       return component(props);
     }
 
-    const element =
-      component.length === 0
-        ? document.createDocumentFragment()
-        : document.createElement(component);
+    const isSVG = SVG_ELEMENTS.has(component);
+    const element = isSVG
+      ? document.createElementNS(SVG_NS, component)
+      : document.createElement(component);
+
     for (const [key, value] of Object.entries(props)) {
-      if (key === "children") {
-        continue;
+      if (key === "children") continue;
+      let attrName = key;
+
+      switch (key) {
+        case "className":
+          attrName = "class";
+        // TODO: add more later
       }
 
-      if (typeof value == "function") {
-        const eventName = key.substring(2);
+      if (typeof value === "function") {
+        const eventName = key.substring(2).toLowerCase();
         element.addEventListener(eventName, value as EventListener);
-      } else if (element instanceof HTMLElement) {
-        if (key === "class" || key === "className") {
-          element.setAttribute("class", String(value));
-        } else {
-          element.setAttribute(key, String(value));
-        }
+      } else {
+        element.setAttribute(attrName, String(value));
       }
     }
 
     element.append(...props.children);
-
     return element;
   },
 };
