@@ -1,23 +1,32 @@
 import { State } from "@/lib/State";
 
 export class BaseComponent<StateT = any> {
-  private container: HTMLDivElement;
+  private _container: HTMLDivElement;
+  private _title?: string;
   state: State<StateT>;
 
   constructor() {
     this.state = new State<StateT>({} as StateT);
-    this.container = document.createElement("div");
+    this._container = document.createElement("div");
     this.getHTMLElements = this.getHTMLElements.bind(this);
   }
 
-  render(): HTMLElement {
-    return this.container;
+  get title() {
+    return this._title ?? document.title;
   }
 
-  // Remove subscription from here, so it only updates DOM
+  set title(title: string) {
+    this._title = title;
+  }
+
+  render(): HTMLElement {
+    return this._container;
+  }
+
   getHTMLElements() {
-    this.container.replaceChildren(router.mount(this.render()));
+    document.title = this.title;
+    this._container.replaceChildren(router.mount(this.render()));
     this.state.subscribe(this.getHTMLElements);
-    return this.container;
+    return this._container;
   }
 }

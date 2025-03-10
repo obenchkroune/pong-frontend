@@ -22,14 +22,15 @@ export const jsx = {
       if (key === "children") {
         continue;
       }
-      if (typeof value === "function" && key.startsWith("on")) {
+
+      if (typeof value == "function") {
         const eventName = key.substring(2);
-        element.addEventListener(eventName, value);
+        element.addEventListener(eventName, value as EventListener);
       } else if (element instanceof HTMLElement) {
         if (key === "class" || key === "className") {
-          element.setAttribute("class", value);
+          element.setAttribute("class", String(value));
         } else {
-          element.setAttribute(key, value);
+          element.setAttribute(key, String(value));
         }
       }
     }

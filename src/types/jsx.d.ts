@@ -7,7 +7,6 @@ declare global {
 }
 
 export type PropsWithChildren<T = Record<string, any>> =
-  | (T & { children?: HTMLElement[] })
-  | null;
+  | T & { children?: any } & Record<string, any>;
 
 export type Component = (props: PropsWithChildren) => HTMLElement;
