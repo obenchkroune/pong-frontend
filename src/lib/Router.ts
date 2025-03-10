@@ -27,7 +27,7 @@ export class Router {
     return div;
   }
 
-  addRoute(path: string, component: typeof BaseComponent) {
+  addRoute(path: string, component: new () => BaseComponent<any>) {
     this.routes.push({ path, component: new component() });
   }
 

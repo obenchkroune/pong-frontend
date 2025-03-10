@@ -1,4 +1,3 @@
-import { State } from "../lib/Store";
 import { BaseComponent } from "./BaseComponent";
 
 interface AppState {
@@ -6,13 +5,11 @@ interface AppState {
   theme: "light" | "dark";
 }
 
-class HomePage extends BaseComponent {
-  protected state: State<AppState>;
-
+class HomePage extends BaseComponent<AppState> {
   constructor() {
     super();
 
-    this.state = new State<AppState>({
+    this.state.setState({
       counter: 0,
       theme: "light",
     });
