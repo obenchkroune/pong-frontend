@@ -3,6 +3,7 @@ import { State } from "@/lib/State";
 export class BaseComponent<StateT = any> {
   private _container: HTMLDivElement;
   private _title?: string;
+  private _unsubscribe?: () => void;
   state: State<StateT>;
 
   constructor() {
@@ -23,10 +24,18 @@ export class BaseComponent<StateT = any> {
     return this._container;
   }
 
+  cleanup() {
+    if (this._unsubscribe) {
+      this._unsubscribe();
+      this._unsubscribe = undefined;
+    }
+  }
+
   getHTMLElements() {
+    this.cleanup();
     document.title = this.title;
     this._container.replaceChildren(router.mount(this.render()));
-    this.state.subscribe(this.getHTMLElements);
+    this._unsubscribe = this.state.subscribe(this.getHTMLElements);
     return this._container;
   }
 }
