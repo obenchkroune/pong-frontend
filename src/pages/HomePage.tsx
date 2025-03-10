@@ -43,6 +43,9 @@ class HomePage extends BaseComponent<AppState> {
           <Button href="/about" variant="outline">
             About Page
           </Button>
+          <Button variant="outline" href="/123">
+            Non Existing Page
+          </Button>
         </div>
 
         <div className="space-y-4">

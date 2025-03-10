@@ -55,7 +55,11 @@ export const jsx = {
         // TODO: add more later
       }
 
-      if (typeof value === "function") {
+      if (
+        typeof value === "function" &&
+        key.startsWith("on") &&
+        key.length > 2
+      ) {
         const eventName = key.substring(2).toLowerCase();
         element.addEventListener(eventName, value as EventListener);
       } else {
