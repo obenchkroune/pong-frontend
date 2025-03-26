@@ -8,9 +8,6 @@ export default class HomePage extends BaseComponent {
   }
 
   render() {
-    return html`
-      <navigation-bar></navigation-bar>
-      <todo-app></todo-app>
-    `;
+    return html` <todo-app></todo-app> `;
   }
 }

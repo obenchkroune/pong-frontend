@@ -66,6 +66,9 @@ export function onWin(eventName: string) {
 export function html(strings: TemplateStringsArray, ...args: any[]) {
   const container = document.createElement('div');
   const html = strings.reduce((acc, str, i) => {
+    if (!args[i]) {
+      return acc + str;
+    }
     if (typeof args[i] === 'function') {
       const content = args[i]();
       if (Array.isArray(content)) {

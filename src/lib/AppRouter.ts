@@ -60,6 +60,11 @@ export class AppRouter extends BaseComponent {
     const currentComponent =
       routes.find((route) => route.pathname === window.location.pathname)?.component ?? 'not-found';
 
-    return html`<${currentComponent}></${currentComponent}>`;
+    return html`
+      <div class='flex flex-col h-full'>
+        <navigation-bar></navigation-bar>
+        <${currentComponent} class='grow'></${currentComponent}>
+      </div>
+    `;
   }
 }

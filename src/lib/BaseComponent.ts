@@ -112,7 +112,11 @@ export class BaseComponent<
       } else if (!freshNode) {
         staleNode.remove();
       } else if (staleNode.tagName === freshNode.tagName) {
-        this.updateElements(staleNode, freshNode);
+        if (this.isCustomElement(staleNode)) {
+          (staleNode as BaseComponent).update?.();
+        } else {
+          this.updateElements(staleNode, freshNode);
+        }
       } else {
         staleNode.replaceWith(freshNode.cloneNode(true) as Element);
       }
@@ -120,6 +124,11 @@ export class BaseComponent<
   }
 
   private updateElements(oldEl: Element, newEl: Element) {
+    if (this.isCustomElement(oldEl)) {
+      (oldEl as any).update?.();
+      return;
+    }
+
     this.updateSingleElement(oldEl, newEl);
 
     const oldChildren = Array.from(oldEl.children);
@@ -131,15 +140,19 @@ export class BaseComponent<
       const newChild = newChildren[i];
 
       if (!oldChild) {
-        oldEl.appendChild(newChild as Element);
+        oldEl.appendChild(newChild.cloneNode(true) as Element);
       } else if (!newChild) {
         oldChild.remove();
       } else if (oldChild.tagName === newChild.tagName) {
         this.updateElements(oldChild, newChild);
       } else {
-        oldChild.replaceWith(newChild as Element);
+        oldChild.replaceWith(newChild.cloneNode(true) as Element);
       }
     }
+  }
+
+  private isCustomElement(el: Element) {
+    return el instanceof BaseComponent && !!customElements.get(el.tagName.toLowerCase());
   }
 
   private updateSingleElement(oldEl: Element, newEl: Element) {
