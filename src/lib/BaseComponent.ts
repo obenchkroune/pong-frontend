@@ -3,7 +3,7 @@ import {
   DOC_EVENT_METADATA_KEY,
   EVENT_METADATA_KEY,
   WIN_EVENT_METADATA_KEY,
-} from '../lib/utils';
+} from './utils';
 
 export class BaseComponent<
   TProps extends Record<string, any> = Record<string, any>
@@ -26,9 +26,13 @@ export class BaseComponent<
     });
   }
 
-  preRender() {}
+  preRender() {
+    //
+  }
 
-  postRender() {}
+  postRender() {
+    //
+  }
 
   connectedCallback() {
     this.preRender();

@@ -1,5 +1,5 @@
 import { customElement, html } from '../lib/utils';
-import { BaseComponent } from './BaseComponent';
+import { BaseComponent } from '../lib/BaseComponent';
 
 @customElement('navigation-bar')
 export class NavBar extends BaseComponent {

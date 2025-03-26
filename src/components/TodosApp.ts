@@ -1,5 +1,5 @@
 import { customElement, onEvent, html } from '../lib/utils';
-import { BaseComponent } from './BaseComponent';
+import { BaseComponent } from '../lib/BaseComponent';
 
 type Todo = {
   userId: number;
@@ -34,10 +34,10 @@ export class TodoApp extends BaseComponent<State> {
 
   @onEvent('click', "button[role='delete-todo']")
   deleteTodo(e: PointerEvent) {
-    if (e.target instanceof HTMLButtonElement) {
-      this.state.todos = this.state.todos.filter(
-        (todo) => todo !== (e.target as HTMLButtonElement).dataset.id
-      );
+    const target = e.target;
+
+    if (target instanceof HTMLButtonElement) {
+      this.state.todos = this.state.todos.filter((todo) => todo !== target.dataset.id);
     }
   }
 

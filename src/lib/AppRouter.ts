@@ -1,5 +1,5 @@
 import { customElement, html, onEvent, onWin } from '../lib/utils';
-import { BaseComponent } from './BaseComponent';
+import { BaseComponent } from '../lib/BaseComponent';
 
 interface Route {
   pathname: string;

@@ -1,4 +1,4 @@
-import { BaseComponent } from '../components/BaseComponent';
+import { BaseComponent } from '../lib/BaseComponent';
 import { customElement, html } from '../lib/utils';
 
 @customElement('leaderboard-page')

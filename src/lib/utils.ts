@@ -1,17 +1,14 @@
-import { BaseComponent } from "../components/BaseComponent";
+import { BaseComponent } from './BaseComponent';
 
-export function customElement(
-  name: string,
-  options?: ElementDefinitionOptions
-) {
+export function customElement(name: string, options?: ElementDefinitionOptions) {
   return function (target: typeof HTMLElement) {
     customElements.define(name, target, options);
   };
 }
 
-export const EVENT_METADATA_KEY = Symbol("eventListeners");
-export const WIN_EVENT_METADATA_KEY = Symbol("winEventListeners");
-export const DOC_EVENT_METADATA_KEY = Symbol("docEeventListeners");
+export const EVENT_METADATA_KEY = Symbol('eventListeners');
+export const WIN_EVENT_METADATA_KEY = Symbol('winEventListeners');
+export const DOC_EVENT_METADATA_KEY = Symbol('docEeventListeners');
 
 export type ComponentEventListeners = {
   methodName: string;
@@ -67,23 +64,23 @@ export function onWin(eventName: string) {
 }
 
 export function html(strings: TemplateStringsArray, ...args: any[]) {
-  const container = document.createElement("div");
+  const container = document.createElement('div');
   const html = strings.reduce((acc, str, i) => {
-    if (typeof args[i] === "function") {
+    if (typeof args[i] === 'function') {
       const content = args[i]();
       if (Array.isArray(content)) {
-        return acc + str + content.map((el) => String(el ?? "")).join("");
+        return acc + str + content.map((el) => String(el ?? '')).join('');
       }
-      return acc + str + String(args[i]() ?? "");
+      return acc + str + String(args[i]() ?? '');
     }
 
     // sanitize
     if (Array.isArray(args[i])) {
-      container.innerText = args[i].map((el) => String(el ?? "")).join("");
+      container.innerText = args[i].map((el) => String(el ?? '')).join('');
     } else {
-      container.innerText = String(args[i] ?? "");
+      container.innerText = String(args[i] ?? '');
     }
     return acc + str + container.innerHTML;
-  }, "");
+  }, '');
   return html;
 }
