@@ -1,5 +1,6 @@
 import { customElement, onEvent, html } from '../lib/utils';
 import { BaseComponent } from '../lib/BaseComponent';
+import LoadingSVG from '../icons/loading.svg?raw';
 
 type Todo = {
   userId: number;
@@ -59,35 +60,7 @@ export class TodoApp extends BaseComponent<State> {
           <button type="submit">save</button>
         </form>
         <ul class="flex flex-col gap-2">
-          ${() =>
-            this.state.isLoading
-              ? html`
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 300 150"
-                    class="h-16 w-16 mx-auto mt-12"
-                  >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="15"
-                      stroke-linecap="round"
-                      stroke-dasharray="300 385"
-                      stroke-dashoffset="0"
-                      d="M275 75c0 31-27 50-50 50-58 0-92-100-150-100-28 0-50 22-50 50s23 50 50 50c58 0 92-100 150-100 24 0 50 19 50 50Z"
-                    >
-                      <animate
-                        attributeName="stroke-dashoffset"
-                        calcMode="spline"
-                        dur="2"
-                        values="685;-685"
-                        keySplines="0 0 1 1"
-                        repeatCount="indefinite"
-                      ></animate>
-                    </path>
-                  </svg>
-                `
-              : ''}
+          ${() => this.state.isLoading && LoadingSVG}
           ${() =>
             this.state.todos.map(
               (todo) => html`<li class="flex items-center border py-2 px-6 rounded-lg">
