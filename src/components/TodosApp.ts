@@ -43,21 +43,24 @@ export class TodoApp extends BaseComponent<State> {
   }
 
   async postRender() {
+    // sleep for 2s / mimic a slow request
     await new Promise((resolve) => {
       setTimeout(resolve, 2000);
     });
     const res = await fetch('https://jsonplaceholder.typicode.com/todos');
     const data: Todo[] = await res.json();
     this.state.isLoading = false;
-    this.state.todos = [...data.map((todo) => todo.title), ...this.state.todos];
+    this.state.todos = data.map((todo) => todo.title).concat(this.state.todos);
   }
 
   render() {
     return html`
       <div class="container grid grid-cols-2 gap-6">
-        <form class="flex gap-2">
-          <input type="text" required placeholder="enter your task here..." />
-          <button type="submit">save</button>
+        <form>
+          <fieldset ${this.state.isLoading && 'disabled'} class="flex gap-2">
+            <input type="text" required placeholder="enter your task here..." />
+            <button type="submit">save</button>
+          </fieldset>
         </form>
         <ul class="flex flex-col gap-2">
           ${() => this.state.isLoading && LoadingSVG}
