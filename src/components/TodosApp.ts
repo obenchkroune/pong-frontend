@@ -1,6 +1,6 @@
 import { customElement, onEvent, html } from '../lib/utils';
 import { BaseComponent } from '../lib/BaseComponent';
-import LoadingSVG from '../icons/loading.svg?raw';
+import { LoadingIcon } from '../icons';
 
 type Todo = {
   userId: number;
@@ -63,7 +63,7 @@ export class TodoApp extends BaseComponent<State> {
           </fieldset>
         </form>
         <ul class="flex flex-col gap-2">
-          ${() => this.state.isLoading && LoadingSVG}
+          ${() => this.state.isLoading && LoadingIcon}
           ${() =>
             this.state.todos.map(
               (todo) => html`<li class="flex items-center border py-2 px-6 rounded-lg">
