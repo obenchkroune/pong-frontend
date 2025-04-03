@@ -55,26 +55,36 @@ export class BaseComponent<
     this.cleanup.forEach((runCleanup) => runCleanup());
   }
 
-  private registerEventHandlers(target: Document | BaseComponent | Window, key: symbol) {
-    const eventListeners: ComponentEventListeners[] = this.constructor.prototype[key] || [];
+  private registerEventHandlers(
+    target: Document | BaseComponent | Window,
+    key: symbol
+  ) {
+    const eventListeners: ComponentEventListeners[] =
+      this.constructor.prototype[key] || [];
     eventListeners.forEach(({ eventName, methodName, selector }) => {
       const boundMethod = (this as any)[methodName].bind(this);
 
       if (!selector) {
         target.addEventListener(eventName, boundMethod);
-        this.cleanup.push(() => target.removeEventListener(eventName, boundMethod));
+        this.cleanup.push(() =>
+          target.removeEventListener(eventName, boundMethod)
+        );
         return;
       }
 
       if (target instanceof Window) {
         window.addEventListener(eventName, boundMethod);
 
-        this.cleanup.push(() => window.removeEventListener(eventName, boundMethod));
+        this.cleanup.push(() =>
+          window.removeEventListener(eventName, boundMethod)
+        );
       } else {
         const elements = target.querySelectorAll(selector);
         elements.forEach((element) => {
           element.addEventListener(eventName, boundMethod);
-          this.cleanup.push(() => element.removeEventListener(eventName, boundMethod));
+          this.cleanup.push(() =>
+            element.removeEventListener(eventName, boundMethod)
+          );
         });
       }
     });
@@ -152,12 +162,19 @@ export class BaseComponent<
   }
 
   private isCustomElement(el: Element) {
-    return el instanceof BaseComponent && !!customElements.get(el.tagName.toLowerCase());
+    return (
+      el instanceof BaseComponent &&
+      !!customElements.get(el.tagName.toLowerCase())
+    );
   }
 
   private updateSingleElement(oldEl: Element, newEl: Element) {
-    const oldAttrs = new Map(Array.from(oldEl.attributes).map((attr) => [attr.name, attr.value]));
-    const newAttrs = new Map(Array.from(newEl.attributes).map((attr) => [attr.name, attr.value]));
+    const oldAttrs = new Map(
+      Array.from(oldEl.attributes).map((attr) => [attr.name, attr.value])
+    );
+    const newAttrs = new Map(
+      Array.from(newEl.attributes).map((attr) => [attr.name, attr.value])
+    );
 
     newAttrs.forEach((value, name) => {
       if (oldAttrs.get(name) !== value) {

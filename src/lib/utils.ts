@@ -1,7 +1,11 @@
 import { BaseComponent } from './BaseComponent';
 
-export function customElement(name: string, options?: ElementDefinitionOptions) {
+export function customElement(
+  name: string,
+  options?: ElementDefinitionOptions
+) {
   return function (target: typeof HTMLElement) {
+    (target.prototype as any).__tag_name__ = name;
     customElements.define(name, target, options);
   };
 }
@@ -18,7 +22,6 @@ export type ComponentEventListeners = {
 
 export function onEvent(eventName: string, selector?: string) {
   return function (target: BaseComponent, propertyKey: string) {
-    // Ensure the metadata storage exists
     if (!target.constructor.prototype[EVENT_METADATA_KEY]) {
       target.constructor.prototype[EVENT_METADATA_KEY] = [];
     }

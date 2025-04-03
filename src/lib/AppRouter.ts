@@ -1,31 +1,35 @@
 import { customElement, html, onEvent, onWin } from '../lib/utils';
 import { BaseComponent } from '../lib/BaseComponent';
 
-interface Route {
-  pathname: string;
-  component: string;
+const pageModules = import.meta.glob('../pages/**/*.ts', { eager: true });
+
+const routes = new Map<string, string>();
+
+for (const modulePath in pageModules) {
+  let routePath = modulePath
+    .replace(/^.*\/pages\//, '/')
+    .replace(/\.(ts|js)$/, '');
+
+  if (routePath.endsWith('/index')) {
+    routePath = routePath.slice(0, -'/index'.length) || '/';
+  }
+
+  const moduleExports = pageModules[modulePath] as any;
+  const component = moduleExports.default;
+  const tag_name = component?.prototype?.__tag_name__;
+
+  if (component && tag_name) {
+    routes.set(routePath, tag_name);
+  }
 }
 
-const routes: Route[] = [
-  {
-    pathname: '/',
-    component: 'home-page',
-  },
-  {
-    pathname: '/about',
-    component: 'about-page',
-  },
-  {
-    pathname: '/leaderboard',
-    component: 'leaderboard-page',
-  },
-];
+console.debug('Registered routes:', Array.from(routes.entries()));
 
 @customElement('app-router')
 export class AppRouter extends BaseComponent {
   constructor() {
     super();
-    const pathname = window.location.pathname;
+    const { pathname } = window.location;
     window.history.pushState({ pathname }, '', this.sanitizePathname(pathname));
   }
 
@@ -41,11 +45,18 @@ export class AppRouter extends BaseComponent {
 
   @onEvent('click')
   handleLink(e: Event) {
-    if (e.target instanceof HTMLAnchorElement && e.target.origin === window.location.origin) {
+    if (
+      e.target instanceof HTMLAnchorElement &&
+      e.target.origin === window.location.origin
+    ) {
       e.preventDefault();
       const pathname = e.target.pathname;
       if (pathname !== window.location.pathname) {
-        window.history.pushState({ pathname }, '', this.sanitizePathname(pathname));
+        window.history.pushState(
+          { pathname },
+          '',
+          this.sanitizePathname(pathname)
+        );
         this.update();
       }
     }
@@ -56,10 +67,27 @@ export class AppRouter extends BaseComponent {
     this.update();
   }
 
-  render() {
-    const currentComponent =
-      routes.find((route) => route.pathname === window.location.pathname)?.component ?? 'not-found';
+  getComponentTagName(pathname: string): string {
+    const sanitizedPath = this.sanitizePathname(pathname);
 
+    if (routes.has(sanitizedPath)) {
+      return routes.get(sanitizedPath)!;
+    }
+
+    if (routes.has(sanitizedPath + '/index')) {
+      return routes.get(sanitizedPath + '/index')!;
+    }
+
+    if (routes.has(sanitizedPath + '/')) {
+      return routes.get(sanitizedPath + '/')!;
+    }
+
+    return routes.get('/404')!;
+  }
+
+  render() {
+    const { pathname } = window.location;
+    const currentComponent = this.getComponentTagName(pathname);
     return html`
       <div class='flex flex-col h-full'>
         <navigation-bar></navigation-bar>
