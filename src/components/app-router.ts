@@ -57,7 +57,7 @@ class AppRouter extends HTMLElement {
     if (pathname !== this.normalizePath(window.location.pathname)) {
       window.history.pushState({ pathname }, "", pathname);
     }
-    Promise.resolve().then(() => this.renderPage());
+    this.renderPage();
   };
 
   renderPage = () => {
