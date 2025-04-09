@@ -29,15 +29,15 @@ class NavigationBar extends HTMLElement {
           </div>
         </div>
       </div>
-      <div class='hidden md:hidden absolute inset-0 bg-background/80 backdrop-blur-md p-8' id='mobile-menu'>
-        <div class='flex items-center justify-between mb-6'>
+      <div class='hidden md:hidden absolute inset-0 bg-background/80 backdrop-blur-md p-4' id='mobile-menu'>
+        <div class='border-b flex items-center justify-between pb-4 mb-4'>
           <h4 class='font-bold text-lg me-8 select-none'>ft_transcendence</h4>
           <button class='cursor-pointer' id='close-menu-btn'>${XIcon}</button>
         </div>
         <div class='flex flex-col gap-2'>
-          <a class='focus:bg-muted py-2 px-4 -mx-4 rounded-md transition-colors' href="/">Home</a>
-          <a class='focus:bg-muted py-2 px-4 -mx-4 rounded-md transition-colors' href="/play">Play</a>
-          <a class='focus:bg-muted py-2 px-4 -mx-4 rounded-md transition-colors' href="/leaderboard">LeaderBoard</a>
+          <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="/">Home</a>
+          <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="/play">Play</a>
+          <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="/leaderboard">LeaderBoard</a>
         </div>
       </div>
     `;

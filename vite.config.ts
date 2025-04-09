@@ -8,4 +8,14 @@ export default defineConfig({
       "~": "/src",
     },
   },
+  // server: {
+  //   proxy: {
+  //     "/api": {
+  //       target: "https://server.transcendence.fr/",
+  //       changeOrigin: true,
+  //       secure: false,
+  //       rewrite: (path) => path.replace(/^\/api/, ""),
+  //     },
+  //   },
+  // },
 });
