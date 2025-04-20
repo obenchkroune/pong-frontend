@@ -21,11 +21,9 @@ export function navigateTo(pathname: string) {
 class AppRouter extends HTMLElement {
   constructor() {
     super();
-    this.renderPage = this.renderPage.bind(this);
-    this.onLinkClick = this.onLinkClick.bind(this);
   }
 
-  renderPage() {
+  renderPage = () => {
     const route = normalizePath(window.location.pathname);
     const match = routes.find((r) => {
       if (r.pathname === "*") return true;
@@ -37,9 +35,9 @@ class AppRouter extends HTMLElement {
       const element = document.createElement(match.component);
       this.replaceChildren(element);
     }
-  }
+  };
 
-  onLinkClick(event: MouseEvent) {
+  onLinkClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
 
     const anchor = target.closest("a");
@@ -65,7 +63,7 @@ class AppRouter extends HTMLElement {
 
       navigateTo(href.replace(origin, ""));
     }
-  }
+  };
 
   connectedCallback() {
     this.addEventListener("click", this.onLinkClick);
