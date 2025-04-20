@@ -1,48 +1,45 @@
 import { routes } from "~/routes";
 
+function normalizePath(path: string) {
+  let normalized = path.replace(/\/{2,}/g, "/");
+
+  if (normalized.length > 1 && normalized.endsWith("/")) {
+    normalized = normalized.slice(0, -1);
+  }
+
+  return normalized;
+}
+
+export function navigateTo(pathname: string) {
+  const appRouter = document.querySelector("app-router") as AppRouter | null;
+  if (pathname !== normalizePath(window.location.pathname)) {
+    window.history.pushState({ pathname }, "", pathname);
+  }
+  appRouter?.renderPage();
+}
+
 class AppRouter extends HTMLElement {
   constructor() {
     super();
+    this.renderPage = this.renderPage.bind(this);
+    this.onLinkClick = this.onLinkClick.bind(this);
   }
 
-  normalizePath = (path: string) => {
-    let normalized = path.replace(/\/{2,}/g, "/");
-
-    if (normalized.length > 1 && normalized.endsWith("/")) {
-      normalized = normalized.slice(0, -1);
-    }
-
-    return normalized;
-  };
-
-  navigate = (pathname: string) => {
-    if (pathname !== this.normalizePath(window.location.pathname)) {
-      window.history.pushState({ pathname }, "", pathname);
-    }
-    this.renderPage();
-  };
-
-  renderPage = () => {
-    const route = this.normalizePath(window.location.pathname);
+  renderPage() {
+    const route = normalizePath(window.location.pathname);
     const match = routes.find((r) => {
       if (r.pathname === "*") return true;
       return r.pathname === route;
     });
 
     if (match) {
-      if (match.protected) {
-        // TODO: hit the informations api route and check if the user is authenticated otherwise redirect to /signin
-        this.navigate("/signin");
-        return;
-      }
-
       document.title = match.title ?? "ft_transcendence";
       const element = document.createElement(match.component);
       this.replaceChildren(element);
     }
-  };
+  }
 
-  onLinkClick = (event: MouseEvent) => {
+  onLinkClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
 
     const anchor = target.closest("a");
@@ -66,14 +63,14 @@ class AppRouter extends HTMLElement {
     if (href.startsWith(origin)) {
       event.preventDefault();
 
-      this.navigate(href.replace(origin, ""));
+      navigateTo(href.replace(origin, ""));
     }
-  };
+  }
 
   connectedCallback() {
     this.addEventListener("click", this.onLinkClick);
     window.addEventListener("popstate", this.renderPage);
-    this.navigate(window.location.pathname);
+    navigateTo(window.location.pathname);
   }
 
   disconnectedCallback() {

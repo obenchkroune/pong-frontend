@@ -1,6 +1,10 @@
 import LockIcon from "~/icons/lock.svg?raw";
 import MenuIcon from "~/icons/menu.svg?raw";
 import XIcon from "~/icons/x.svg?raw";
+import UserIcon from "~/icons/user.svg?raw";
+import CogIcon from "~/icons/cog.svg?raw";
+import LogoutIcon from "~/icons/logout.svg?raw";
+import { navigateTo } from "./app-router";
 
 class NavigationBar extends HTMLElement {
   constructor() {
@@ -8,6 +12,27 @@ class NavigationBar extends HTMLElement {
   }
 
   render() {
+    const pages = window._currentUser
+      ? [
+          {
+            name: "Chat",
+            href: "/chat",
+          },
+          {
+            name: "Play",
+            href: "/play",
+          },
+          {
+            name: "LeaderBoard",
+            href: "/leaderboard",
+          },
+        ]
+      : [
+          {
+            name: "Home",
+            href: "/",
+          },
+        ];
     this.innerHTML = /*html*/ `
       <div class='px-2 py-2 border-b mb-8'>
         <div class='container flex items-center'>
@@ -17,15 +42,47 @@ class NavigationBar extends HTMLElement {
           </button>
           <h4 class='font-bold text-lg me-8 select-none'>ft_transcendence</h4>
           <div class='hidden md:flex gap-2 [&>a]:text-muted-foreground [&>a]:hover:text-foreground transition-colors [&>a]:p-2 [&>a]:py-3'>
-            <a href="/">Home</a>
-            <a href="/play">Play</a>
-            <a href="/leaderboard">LeaderBoard</a>
+            ${pages
+              .map(
+                (page) => /*html*/ `
+                  <a class='cursor-pointer' href="${page.href}">
+                    ${page.name}
+                  </a>
+                `
+              )
+              .join("")}
           </div>
           <div class='ms-auto'>
-            <a class='btn' href="/signin">
-              ${LockIcon}
-              <span>Signin</span>
-            </a>
+            ${
+              window._currentUser
+                ? /*html*/ `
+                  <div class='relative'>
+                    <button id='user-menu-btn' class='cursor-pointer focus-within:ring-ring'>
+                      <img src='/api/${window._currentUser.picture_url}' class='h-10 rounded-full' />
+                    </button>
+                    <div id='user-menu' class='hidden w-48 absolute right-0 top-full bg-background border border-muted rounded-md shadow-lg mt-2 p-2 [&>a]:p-1 [&>button]:p-1'>
+                      <a class='flex gap-2 [&>svg]:h-4 [&>svg]:w-4 text-sm text-muted-foreground hover:text-foreground transition-colors' href='/profile'>
+                        ${UserIcon}
+                        <span>Profile</span>
+                      </a>
+                      <a class='flex gap-2 [&>svg]:h-4 [&>svg]:w-4 text-sm text-muted-foreground hover:text-foreground transition-colors' href='/settings'>
+                        ${CogIcon}
+                        <span>Settings</span>
+                      </a>
+                      <button type='button' id='logout-btn' class='flex gap-2 [&>svg]:h-4 [&>svg]:w-4 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer'>
+                        ${LogoutIcon}
+                        <span>Signout</span>
+                      </button>
+                    </div>
+                  </div>
+                `
+                : /*html*/ `
+                  <a class='btn' href="/signin">
+                    ${LockIcon}
+                    <span>Signin</span>
+                  </a>
+                `
+            }
           </div>
         </div>
       </div>
@@ -35,37 +92,125 @@ class NavigationBar extends HTMLElement {
           <button class='cursor-pointer' id='close-menu-btn'>${XIcon}</button>
         </div>
         <div class='flex flex-col gap-2'>
-          <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="/">Home</a>
-          <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="/play">Play</a>
-          <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="/leaderboard">LeaderBoard</a>
+          ${pages
+            .map(
+              (page) => /*html*/ `
+                <a class='focus:bg-muted py-2 px-4 -mx-4 transition-colors' href="${page.href}">
+                  ${page.name}
+                </a>
+              `
+            )
+            .join("")}
         </div>
       </div>
     `;
   }
 
+  handleLogout = () => {
+    localStorage.removeItem("uid");
+    window._currentUser = null;
+    navigateTo("/signin");
+  };
+
+  handleClickOutside = (event: MouseEvent) => {
+    const userMenu = this.querySelector("#user-menu") as HTMLDivElement | null;
+    const userMenuBtn = this.querySelector(
+      "#user-menu-btn"
+    ) as HTMLButtonElement | null;
+
+    if (userMenu && userMenuBtn) {
+      const target = event.target as HTMLElement;
+      if (
+        !userMenu.contains(target) &&
+        !userMenuBtn.contains(target) &&
+        userMenu.classList.contains("hidden") === false
+      ) {
+        userMenu.classList.add("hidden");
+      }
+    }
+  };
+
   setup() {
     const closeMenuBtn = this.querySelector(
       "#close-menu-btn"
-    ) as HTMLButtonElement;
+    ) as HTMLButtonElement | null;
     const openMenuBtn = this.querySelector(
       "#open-menu-btn"
-    ) as HTMLButtonElement;
+    ) as HTMLButtonElement | null;
     const mobileMenuElement = this.querySelector(
       "#mobile-menu"
-    ) as HTMLDivElement;
+    ) as HTMLDivElement | null;
+    const userMenuBtn = this.querySelector(
+      "#user-menu-btn"
+    ) as HTMLButtonElement | null;
+    const userMenu = this.querySelector("#user-menu") as HTMLDivElement | null;
 
-    closeMenuBtn.addEventListener("click", () => {
-      mobileMenuElement.classList.add("hidden");
-    });
+    if (userMenu && userMenuBtn) {
+      userMenuBtn.addEventListener("click", () => {
+        userMenu.classList.toggle("hidden");
+        userMenu.animate(
+          [
+            { opacity: 0, transform: "translateY(-10px)" },
+            { opacity: 1, transform: "translateY(0)" },
+          ],
+          {
+            duration: 200,
+            easing: "ease-in-out",
+            fill: "forwards",
+          }
+        );
+      });
+      // handle click outside
+      document.addEventListener("click", this.handleClickOutside);
+    }
 
-    openMenuBtn.addEventListener("click", () => {
-      mobileMenuElement.classList.remove("hidden");
-    });
+    if (closeMenuBtn && mobileMenuElement && openMenuBtn) {
+      closeMenuBtn.addEventListener("click", () => {
+        const anim = mobileMenuElement.animate(
+          [
+            { opacity: 1, transform: "translateX(0)" },
+            { opacity: 0, transform: "translateX(-100%)" },
+          ],
+          {
+            duration: 200,
+            easing: "ease-in-out",
+            fill: "forwards",
+          }
+        );
+        anim.onfinish = () => {
+          mobileMenuElement.classList.add("hidden");
+        };
+      });
+
+      openMenuBtn.addEventListener("click", () => {
+        mobileMenuElement.classList.remove("hidden");
+        mobileMenuElement.animate(
+          [
+            { opacity: 0, transform: "translateX(-100%)" },
+            { opacity: 1, transform: "translateX(0)" },
+          ],
+          {
+            duration: 200,
+            easing: "ease-in-out",
+            fill: "forwards",
+          }
+        );
+      });
+    }
+
+    const logoutBtn = this.querySelector(
+      "#logout-btn"
+    ) as HTMLButtonElement | null;
+    logoutBtn?.addEventListener("click", this.handleLogout);
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     this.render();
     this.setup();
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("click", this.handleClickOutside);
   }
 }
 

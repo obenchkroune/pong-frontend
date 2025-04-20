@@ -1,25 +1,24 @@
+import { navigateTo } from "~/components/app-router";
+
 class ProfilePage extends HTMLElement {
   constructor() {
     super();
   }
 
   render() {
-    // TODO: check if user is logged in otherwise redirect to /signin
+    if (!window._currentUser) navigateTo("/signin");
     this.innerHTML = /*html*/ `
       <navigation-bar></navigation-bar>
-      <div>
-        <h1>Profile Page</h1>
-      </div>
+      <pre class='container'>${JSON.stringify(
+        window._currentUser,
+        null,
+        2
+      )}</pre>
     `;
-  }
-
-  setup() {
-    //
   }
 
   connectedCallback() {
     this.render();
-    this.setup();
   }
 }
 

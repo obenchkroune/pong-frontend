@@ -1,5 +1,6 @@
 import GoogleIcon from "~/icons/google.svg?raw";
 import LockIcon from "~/icons/lock.svg?raw";
+import { navigateTo } from "~/components/app-router";
 
 class SigninPage extends HTMLElement {
   constructor() {
@@ -22,7 +23,7 @@ class SigninPage extends HTMLElement {
   };
 
   getAuthState = async () => {
-    const res = await fetch("https://server.transcendence.fr/OAuth/state"); // TODO: create a proxy using vite
+    const res = await fetch("/api/OAuth/state");
     if (!res.ok) throw Error("Unexpected error occured!");
 
     return res.text();
@@ -55,7 +56,10 @@ class SigninPage extends HTMLElement {
     }
   };
 
-  render() {
+  async render() {
+    if (window._currentUser) {
+      return navigateTo("/profile");
+    }
     this.innerHTML = /*html*/ `
       <navigation-bar></navigation-bar>
       <fieldset class="max-w-md mx-auto my-4 flex flex-col gap-4 mt-16">
@@ -95,6 +99,7 @@ class SigninPage extends HTMLElement {
           </div>
         </fieldset>
     `;
+    this.setup();
   }
 
   setup() {
@@ -112,8 +117,8 @@ class SigninPage extends HTMLElement {
   }
 
   connectedCallback() {
+    this.innerHTML = "<app-loader></app-loader>";
     this.render();
-    this.setup();
   }
 }
 
