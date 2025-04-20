@@ -184,48 +184,43 @@ class NavigationBar extends HTMLElement {
     }
   };
 
-  closeMobileMenu = () => {
+  toggleMobileMenu = () => {
     const mobileMenuElement = this.querySelector(
       "#mobile-menu"
     ) as HTMLDivElement | null;
 
     if (!mobileMenuElement) return;
 
-    const anim = mobileMenuElement.animate(
-      [
-        { opacity: 1, transform: "translateX(0)" },
-        { opacity: 0, transform: "translateX(-100%)" },
-      ],
-      {
-        duration: 200,
-        easing: "ease-in-out",
-        fill: "forwards",
-      }
-    );
-    anim.onfinish = () => {
-      mobileMenuElement.classList.add("hidden");
+    const isHidden = mobileMenuElement.classList.contains("hidden");
+    const animationOpts: KeyframeAnimationOptions = {
+      duration: 200,
+      easing: "ease-in-out",
+      fill: "forwards",
     };
-  };
 
-  openMobileMenu = () => {
-    const mobileMenuElement = this.querySelector(
-      "#mobile-menu"
-    ) as HTMLDivElement | null;
+    if (isHidden) {
+      mobileMenuElement.classList.remove("hidden");
 
-    if (!mobileMenuElement) return;
+      mobileMenuElement.animate(
+        [
+          { opacity: 0, transform: "translateX(-100%)" },
+          { opacity: 1, transform: "translateX(0)" },
+        ],
+        animationOpts
+      );
+    } else {
+      const anim = mobileMenuElement.animate(
+        [
+          { opacity: 1, transform: "translateX(0)" },
+          { opacity: 0, transform: "translateX(-100%)" },
+        ],
+        animationOpts
+      );
 
-    mobileMenuElement.classList.remove("hidden");
-    mobileMenuElement.animate(
-      [
-        { opacity: 0, transform: "translateX(-100%)" },
-        { opacity: 1, transform: "translateX(0)" },
-      ],
-      {
-        duration: 200,
-        easing: "ease-in-out",
-        fill: "forwards",
-      }
-    );
+      anim.onfinish = () => {
+        mobileMenuElement.classList.add("hidden");
+      };
+    }
   };
 
   setup() {
@@ -239,12 +234,12 @@ class NavigationBar extends HTMLElement {
     // mobile menu
     this.querySelector("#close-menu-btn")?.addEventListener(
       "click",
-      this.closeMobileMenu
+      this.toggleMobileMenu
     );
 
     this.querySelector("#open-menu-btn")?.addEventListener(
       "click",
-      this.openMobileMenu
+      this.toggleMobileMenu
     );
 
     // logout btn
