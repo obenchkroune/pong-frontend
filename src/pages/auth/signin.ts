@@ -18,11 +18,14 @@ class SigninPage extends HTMLElement {
 
   handleSumbit = async (e: SubmitEvent) => {
     const form = (e.target as HTMLElement).closest("form");
+    const error = this.querySelector("#error") as HTMLDivElement;
 
     if (form) {
       e.preventDefault();
       const fieldset = form.closest("fieldset");
       const formData = new FormData(form);
+
+      error.innerHTML = "";
 
       if (fieldset) fieldset.disabled = true;
 
@@ -31,8 +34,8 @@ class SigninPage extends HTMLElement {
         body: formData,
       });
       if (!res.ok) {
-        alert(await res.text());
         if (fieldset) fieldset.disabled = false;
+        error.innerHTML = /*html*/ `<p class='mb-2'>${await res.text()}</p>`;
         return;
       }
       const data = await res.json();
@@ -85,6 +88,7 @@ class SigninPage extends HTMLElement {
       <navigation-bar></navigation-bar>
       <fieldset class="max-w-md mx-auto my-4 flex flex-col gap-4 mt-16">
           <div class="p-6 md:rounded-md border">
+            <div id='error' class='text-red-500 text-sm'></div>
             <form class="space-y-6 [&_label]:block [&_label]:mb-4">
               <div>
                 <label for="user-name">username</label>

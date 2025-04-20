@@ -14,15 +14,18 @@ class SignupPage extends HTMLElement {
       e.preventDefault();
       const fieldset = form.closest("fieldset");
       const formData = new FormData(form);
+      const error = this.querySelector("#error") as HTMLDivElement;
 
       if (
         formData.get("password")?.toString() !==
         formData.get("password_confirmation")?.toString()
       ) {
-        alert("Password/Password Confirmation doesnt match");
+        error.innerHTML = /*html*/ `<p class='mb-2'>password/password confirmation doesn't match</p>`;
         return;
       }
       formData.delete("password_confirmation");
+
+      error.innerHTML = "";
 
       if (fieldset) fieldset.disabled = true;
 
@@ -31,8 +34,8 @@ class SignupPage extends HTMLElement {
         body: formData,
       });
       if (!res.ok) {
-        alert(await res.text());
         if (fieldset) fieldset.disabled = false;
+        error.innerHTML = /*html*/ `<p class='mb-2'>${await res.text()}</p>`;
         return;
       }
       const data = await res.json();
@@ -58,6 +61,7 @@ class SignupPage extends HTMLElement {
       <navigation-bar></navigation-bar>
       <fieldset class="max-w-md mx-auto my-4 flex flex-col gap-4 mt-16">
           <div class="p-6 md:rounded-md border">
+            <div id='error' class='text-red-500 text-sm'></div>
             <form class="space-y-6 [&_label]:block [&_label]:mb-4">
               <div>
                 <label for="user-name">username</label>
