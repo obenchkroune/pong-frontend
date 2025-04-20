@@ -1,13 +1,14 @@
 import GoogleIcon from "~/icons/google.svg?raw";
 import LockIcon from "~/icons/lock.svg?raw";
 import { navigateTo } from "~/components/app-router";
+import { getUser } from "../api/user";
 
 class SigninPage extends HTMLElement {
   constructor() {
     super();
   }
 
-  handleSumbit = (e: SubmitEvent) => {
+  handleSumbit = async (e: SubmitEvent) => {
     const form = (e.target as HTMLElement).closest("form");
 
     if (form) {
@@ -19,6 +20,20 @@ class SigninPage extends HTMLElement {
       formData.forEach((value, key) => {
         console.log(`${key}: ${value}`);
       });
+
+      const res = await fetch("/api/user/signin", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) {
+        alert(await res.text());
+        return;
+      }
+      const data = await res.json();
+
+      localStorage.setItem("uid", data.token as string);
+      window._currentUser = await getUser();
+      navigateTo("/profile");
     }
   };
 
