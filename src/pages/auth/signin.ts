@@ -13,13 +13,10 @@ class SigninPage extends HTMLElement {
 
     if (form) {
       e.preventDefault();
+      const fieldset = form.closest("fieldset");
       const formData = new FormData(form);
 
-      console.log(formData);
-
-      formData.forEach((value, key) => {
-        console.log(`${key}: ${value}`);
-      });
+      if (fieldset) fieldset.disabled = true;
 
       const res = await fetch("/api/user/signin", {
         method: "POST",
@@ -27,6 +24,7 @@ class SigninPage extends HTMLElement {
       });
       if (!res.ok) {
         alert(await res.text());
+        if (fieldset) fieldset.disabled = false;
         return;
       }
       const data = await res.json();
