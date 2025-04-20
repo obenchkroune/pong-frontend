@@ -4,6 +4,7 @@ import XIcon from "~/icons/x.svg?raw";
 import UserIcon from "~/icons/user.svg?raw";
 import CogIcon from "~/icons/cog.svg?raw";
 import LogoutIcon from "~/icons/logout.svg?raw";
+import RocketIcon from "~/icons/rocket.svg?raw";
 import { navigateTo } from "./app-router";
 
 class NavigationBar extends HTMLElement {
@@ -15,12 +16,12 @@ class NavigationBar extends HTMLElement {
     const pages = window._currentUser
       ? [
           {
-            name: "Chat",
-            href: "/chat",
-          },
-          {
             name: "Play",
             href: "/play",
+          },
+          {
+            name: "Chat",
+            href: "/chat",
           },
           {
             name: "LeaderBoard",
@@ -52,13 +53,13 @@ class NavigationBar extends HTMLElement {
               )
               .join("")}
           </div>
-          <div class='ms-auto'>
+          <div class='ms-auto space-x-2'>
             ${
               window._currentUser
                 ? /*html*/ `
                   <div class='relative'>
                     <button id='user-menu-btn' class='cursor-pointer focus-within:ring-ring'>
-                      <img src='/api/${window._currentUser.picture_url}' class='h-10 rounded-full' />
+                      <img src='/api/${window._currentUser.picture_url}' class='h-10 w-10 ring ring-offset-2 ring-ring rounded-full' alt='${window._currentUser.username}' />
                     </button>
                     <div id='user-menu' class='hidden w-48 absolute right-0 top-full bg-background border border-muted rounded-md shadow-lg mt-2 p-2 [&>a]:p-1 [&>button]:p-1'>
                       <a class='flex gap-2 [&>svg]:h-4 [&>svg]:w-4 text-sm text-muted-foreground hover:text-foreground transition-colors' href='/profile'>
@@ -77,9 +78,13 @@ class NavigationBar extends HTMLElement {
                   </div>
                 `
                 : /*html*/ `
-                  <a class='btn' href="/signin">
+                  <a class='btn-ghost' href="/signin">
                     ${LockIcon}
-                    <span>Signin</span>
+                    <span>Sign-in</span>
+                  </a>
+                  <a class='btn' href="/signup">
+                    ${RocketIcon}
+                    <span>Sign-up</span>
                   </a>
                 `
             }

@@ -16,6 +16,11 @@ export const routes: Route[] = [
     title: "Sign-in",
   },
   {
+    pathname: "/signup",
+    component: "signup-page",
+    title: "Sign-up",
+  },
+  {
     pathname: "/profile",
     component: "profile-page",
     title: "Profile",

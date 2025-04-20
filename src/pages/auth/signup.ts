@@ -1,9 +1,8 @@
-import GoogleIcon from "~/icons/google.svg?raw";
 import LockIcon from "~/icons/lock.svg?raw";
 import { navigateTo } from "~/components/app-router";
 import { getUser } from "../api/user";
 
-class SigninPage extends HTMLElement {
+class SignupPage extends HTMLElement {
   constructor() {
     super();
   }
@@ -16,9 +15,18 @@ class SigninPage extends HTMLElement {
       const fieldset = form.closest("fieldset");
       const formData = new FormData(form);
 
+      if (
+        formData.get("password")?.toString() !==
+        formData.get("password_confirmation")?.toString()
+      ) {
+        alert("Password/Password Confirmation doesnt match");
+        return;
+      }
+      formData.delete("password_confirmation");
+
       if (fieldset) fieldset.disabled = true;
 
-      const res = await fetch("/api/user/signin", {
+      const res = await fetch("/api/user/signup", {
         method: "POST",
         body: formData,
       });
@@ -40,33 +48,6 @@ class SigninPage extends HTMLElement {
     if (!res.ok) throw Error("Unexpected error occured!");
 
     return res.text();
-  };
-
-  handleSignin = async () => {
-    try {
-      const state = await this.getAuthState();
-
-      const params = {
-        state,
-        client_id:
-          "752517493811-3uehg85g0ienmif5frk1c0lpiq15rkqm.apps.googleusercontent.com",
-        redirect_uri: "https://server.transcendence.fr/OAuth/code",
-        scope:
-          "openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-        include_granted_scopes: "true",
-        response_type: "code",
-        access_type: "offline",
-      };
-
-      const queryString = new URLSearchParams(params).toString();
-
-      const url = `https://accounts.google.com/o/oauth2/v2/auth?${queryString}`;
-
-      window.open(url, "_blank");
-    } catch (err) {
-      if (err instanceof Error) alert(err.message);
-      else console.error("Unexpected Error: ", err);
-    }
   };
 
   async render() {
@@ -101,16 +82,22 @@ class SigninPage extends HTMLElement {
                   required
                 />
               </div>
+              <div>
+                <label for="user-password-confirmation">password confirmation</label>
+                <input
+                  name="password_confirmation"
+                  class='input'
+                  type="password"
+                  id="user-password-confirmation"
+                  placeholder="••••••••••••••••"
+                  required
+                />
+              </div>
               <button class='btn w-full' type="submit">
                 ${LockIcon}
-                <span>Submit</span>
+                <span>Signup</span>
               </button>
             </form>
-            <div class="shrink-0 bg-border h-[1px] w-full my-4"></div>
-            <button id='google-auth-btn' class='btn w-full' type="button">
-              ${GoogleIcon}
-              <span>Sign-in with Google</span>
-            </button>
           </div>
         </fieldset>
     `;
@@ -119,22 +106,17 @@ class SigninPage extends HTMLElement {
 
   setup() {
     const signinForm = this.querySelector("form");
-    const googleAuthBtn = this.querySelector("#google-auth-btn") as
-      | HTMLButtonElement
-      | undefined;
     const userInput = this.querySelector("#user-name") as
       | HTMLInputElement
       | undefined;
 
     signinForm?.addEventListener("submit", this.handleSumbit);
-    googleAuthBtn?.addEventListener("click", this.handleSignin);
     userInput?.focus();
   }
 
   connectedCallback() {
-    this.innerHTML = "<app-loader></app-loader>";
     this.render();
   }
 }
 
-customElements.define("signin-page", SigninPage);
+customElements.define("signup-page", SignupPage);
