@@ -1,6 +1,6 @@
 import LockIcon from "~/icons/lock.svg?raw";
 import { navigateTo } from "~/components/app-router";
-import { getUser } from "../api/user";
+import { getUser } from "~/api/user";
 
 class SignupPage extends HTMLElement {
   constructor() {

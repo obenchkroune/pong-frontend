@@ -1,4 +1,4 @@
-import { User } from "./pages/api/user";
+import { User } from "./api/user";
 
 declare global {
   interface Window {

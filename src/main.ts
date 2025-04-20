@@ -1,4 +1,4 @@
-import { getUser } from "./pages/api/user";
+import { getUser } from "./api/user";
 import "./style.css";
 import.meta.glob("./components/**/*.ts", { eager: true });
 import.meta.glob("./pages/**/*.ts", { eager: true });
