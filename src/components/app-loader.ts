@@ -18,6 +18,28 @@ class AppLoader extends HTMLElement {
 
   connectedCallback() {
     this.render();
+    this.firstElementChild?.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 300,
+      easing: "ease-in-out",
+      fill: "forwards",
+    });
+  }
+
+  remove() {
+    const animation = this.firstElementChild?.animate(
+      [{ opacity: 1 }, { opacity: 0 }],
+      {
+        duration: 300,
+        easing: "ease-in-out",
+        fill: "forwards",
+      }
+    );
+
+    if (animation) {
+      animation.onfinish = () => {
+        super.remove();
+      };
+    }
   }
 }
 

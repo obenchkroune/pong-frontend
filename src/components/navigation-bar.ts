@@ -117,7 +117,7 @@ class NavigationBar extends HTMLElement {
     navigateTo("/signin");
   };
 
-  handleClickOutside = (event: MouseEvent) => {
+  closeUserMenu = (event: MouseEvent) => {
     const userMenu = this.querySelector("#user-menu") as HTMLDivElement | null;
     const userMenuBtn = this.querySelector(
       "#user-menu-btn"
@@ -130,83 +130,128 @@ class NavigationBar extends HTMLElement {
         !userMenuBtn.contains(target) &&
         userMenu.classList.contains("hidden") === false
       ) {
-        userMenu.classList.add("hidden");
+        const animation = userMenu.animate(
+          [
+            { opacity: 1, transform: "translateY(0)" },
+            { opacity: 0, transform: "translateY(-10px)" },
+          ],
+          {
+            duration: 200,
+            easing: "ease-in-out",
+            fill: "forwards",
+          }
+        );
+
+        animation.onfinish = () => userMenu.classList.add("hidden");
       }
     }
   };
 
-  setup() {
-    const closeMenuBtn = this.querySelector(
-      "#close-menu-btn"
-    ) as HTMLButtonElement | null;
-    const openMenuBtn = this.querySelector(
-      "#open-menu-btn"
-    ) as HTMLButtonElement | null;
+  toggleUserMenu = () => {
+    const userMenu = this.querySelector("#user-menu") as HTMLDivElement | null;
+
+    if (!userMenu) return;
+
+    const isClosed = userMenu.classList.contains("hidden");
+    let animation: Animation;
+
+    if (isClosed) {
+      animation = userMenu.animate(
+        [
+          { opacity: 0, transform: "translateY(-10px)" },
+          { opacity: 1, transform: "translateY(0)" },
+        ],
+        {
+          duration: 200,
+          easing: "ease-in-out",
+          fill: "forwards",
+        }
+      );
+      userMenu.classList.remove("hidden");
+    } else {
+      animation = userMenu.animate(
+        [
+          { opacity: 1, transform: "translateY(0)" },
+          { opacity: 0, transform: "translateY(-10px)" },
+        ],
+        {
+          duration: 200,
+          easing: "ease-in-out",
+          fill: "forwards",
+        }
+      );
+      animation.onfinish = () => userMenu.classList.add("hidden");
+    }
+  };
+
+  closeMobileMenu = () => {
     const mobileMenuElement = this.querySelector(
       "#mobile-menu"
     ) as HTMLDivElement | null;
-    const userMenuBtn = this.querySelector(
-      "#user-menu-btn"
-    ) as HTMLButtonElement | null;
-    const userMenu = this.querySelector("#user-menu") as HTMLDivElement | null;
 
-    if (userMenu && userMenuBtn) {
-      userMenuBtn.addEventListener("click", () => {
-        userMenu.classList.toggle("hidden");
-        userMenu.animate(
-          [
-            { opacity: 0, transform: "translateY(-10px)" },
-            { opacity: 1, transform: "translateY(0)" },
-          ],
-          {
-            duration: 200,
-            easing: "ease-in-out",
-            fill: "forwards",
-          }
-        );
-      });
-      // handle click outside
-      document.addEventListener("click", this.handleClickOutside);
-    }
+    if (!mobileMenuElement) return;
 
-    if (closeMenuBtn && mobileMenuElement && openMenuBtn) {
-      closeMenuBtn.addEventListener("click", () => {
-        const anim = mobileMenuElement.animate(
-          [
-            { opacity: 1, transform: "translateX(0)" },
-            { opacity: 0, transform: "translateX(-100%)" },
-          ],
-          {
-            duration: 200,
-            easing: "ease-in-out",
-            fill: "forwards",
-          }
-        );
-        anim.onfinish = () => {
-          mobileMenuElement.classList.add("hidden");
-        };
-      });
+    const anim = mobileMenuElement.animate(
+      [
+        { opacity: 1, transform: "translateX(0)" },
+        { opacity: 0, transform: "translateX(-100%)" },
+      ],
+      {
+        duration: 200,
+        easing: "ease-in-out",
+        fill: "forwards",
+      }
+    );
+    anim.onfinish = () => {
+      mobileMenuElement.classList.add("hidden");
+    };
+  };
 
-      openMenuBtn.addEventListener("click", () => {
-        mobileMenuElement.classList.remove("hidden");
-        mobileMenuElement.animate(
-          [
-            { opacity: 0, transform: "translateX(-100%)" },
-            { opacity: 1, transform: "translateX(0)" },
-          ],
-          {
-            duration: 200,
-            easing: "ease-in-out",
-            fill: "forwards",
-          }
-        );
-      });
-    }
+  openMobileMenu = () => {
+    const mobileMenuElement = this.querySelector(
+      "#mobile-menu"
+    ) as HTMLDivElement | null;
 
-    const logoutBtn = this.querySelector(
-      "#logout-btn"
-    ) as HTMLButtonElement | null;
-    logoutBtn?.addEventListener("click", this.handleLogout);
+    if (!mobileMenuElement) return;
+
+    mobileMenuElement.classList.remove("hidden");
+    mobileMenuElement.animate(
+      [
+        { opacity: 0, transform: "translateX(-100%)" },
+        { opacity: 1, transform: "translateX(0)" },
+      ],
+      {
+        duration: 200,
+        easing: "ease-in-out",
+        fill: "forwards",
+      }
+    );
+  };
+
+  setup() {
+    // user menu
+    this.querySelector("#user-menu-btn")?.addEventListener(
+      "click",
+      this.toggleUserMenu
+    );
+    document.addEventListener("click", this.closeUserMenu);
+
+    // mobile menu
+    this.querySelector("#close-menu-btn")?.addEventListener(
+      "click",
+      this.closeMobileMenu
+    );
+
+    this.querySelector("#open-menu-btn")?.addEventListener(
+      "click",
+      this.openMobileMenu
+    );
+
+    // logout btn
+    this.querySelector("#logout-btn")?.addEventListener(
+      "click",
+      this.handleLogout
+    );
   }
 
   async connectedCallback() {
@@ -215,7 +260,7 @@ class NavigationBar extends HTMLElement {
   }
 
   disconnectedCallback() {
-    document.removeEventListener("click", this.handleClickOutside);
+    document.removeEventListener("click", this.closeUserMenu);
   }
 }
 

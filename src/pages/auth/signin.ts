@@ -6,6 +6,14 @@ import { getUser } from "../api/user";
 class SigninPage extends HTMLElement {
   constructor() {
     super();
+    const token = new URL(window.location.href).searchParams.get("token");
+    if (token) {
+      (async () => {
+        localStorage.setItem("uid", token);
+        window._currentUser = await getUser();
+        navigateTo("/profile");
+      })();
+    }
   }
 
   handleSumbit = async (e: SubmitEvent) => {
